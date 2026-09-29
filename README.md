@@ -18,6 +18,18 @@ O repositório reúne:
 - [Ícones PNG](./icons/)
 - [Mapa completo das cenas e dos softwares](./CONFIGURACAO.md)
 - [Origem e licença dos recursos visuais](./ASSETS.md)
+- [Verificação de integridade SHA-256](./SHA256SUMS)
+- [Política de segurança](./SECURITY.md)
+
+## Segurança dos downloads
+
+Use somente este repositório oficial. Antes de importar uma cena ou executar o script, compare o SHA-256 do arquivo com [`SHA256SUMS`](./SHA256SUMS). No PowerShell:
+
+```powershell
+Get-FileHash -Algorithm SHA256 ".\arquivo-baixado"
+```
+
+As cenas públicas não contêm número de série, IDs de áudio nem caminhos pessoais. A cena “Controlar Windows” foi publicada sem comandos de desligar, reiniciar, suspender ou encerrar sessão. Endereços externos somente são abertos quando o respectivo botão é pressionado.
 
 ## O problema resolvido
 
