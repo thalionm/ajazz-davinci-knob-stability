@@ -9,7 +9,7 @@ O repositório reúne:
 - 58 ícones PNG para personalização;
 - tabelas para reproduzir cada cena em outras controladoras, mesmo quando o arquivo `.SDProfile` não é compatível.
 
-> Configuração validada no Windows com AutoHotkey v1.1.37.02, DaVinci Resolve 20.3.2 (Build 9) e uma controladora da família AKP03E. Cenas do Stream Dock são vinculadas ao modelo; em outro modelo ou software, use as tabelas de configuração manual.
+> O limitador dos knobs foi inicialmente validado no Windows com AutoHotkey v1.1.37.02 e DaVinci Resolve 20.3.2 (Build 9). Testes posteriores no **DaVinci Resolve gratuito 21.1, Build 14**, confirmaram uma falha independente do Resolve ao editar com o **Visualizador Cinema** em tela cheia no segundo monitor. Consulte o [aviso dedicado](./FALHA-TELA-CHEIA-RESOLVE.md). Cenas do Stream Dock são vinculadas ao modelo; em outro modelo ou software, use as tabelas de configuração manual.
 
 ## Downloads
 
@@ -17,6 +17,8 @@ O repositório reúne:
 - [Cenas prontas](./scenes/)
 - [Ícones PNG](./icons/)
 - [Mapa completo das cenas e dos softwares](./CONFIGURACAO.md)
+- [Diagnóstico de atalhos seletivos do Resolve](./DIAGNOSTICO-ATALHOS-RESOLVE.md)
+- [Falha do Visualizador Cinema em tela cheia](./FALHA-TELA-CHEIA-RESOLVE.md)
 - [Origem e licença dos recursos visuais](./ASSETS.md)
 - [Verificação de integridade SHA-256](./SHA256SUMS)
 - [Política de segurança](./SECURITY.md)
@@ -31,9 +33,9 @@ Get-FileHash -Algorithm SHA256 ".\arquivo-baixado"
 
 As cenas públicas não contêm número de série, IDs de áudio nem caminhos pessoais. A cena “Controlar Windows” foi publicada sem comandos de desligar, reiniciar, suspender ou encerrar sessão. Endereços externos somente são abertos quando o respectivo botão é pressionado.
 
-## O problema resolvido
+## O problema tratado pelo script
 
-Depois de muitos giros rápidos dos knobs:
+O problema inicial aparecia depois de muitos giros rápidos dos knobs:
 
 - a controladora deixava de responder dentro do DaVinci Resolve;
 - os atalhos do teclado também paravam de funcionar apenas no Resolve;
@@ -41,6 +43,8 @@ Depois de muitos giros rápidos dos knobs:
 - trocar de programa e aguardar um pouco fazia o Resolve voltar.
 
 O comportamento não correspondia a um `Ctrl` preso. O padrão era compatível com uma fila de eventos sobrecarregada: um encoder pode emitir dezenas ou centenas de pulsos por segundo, enquanto o Resolve pode consumi-los mais devagar.
+
+O limitador tornou os knobs estáveis no teste de estresse, mas **não deve ser apresentado como correção completa para todo problema de teclado do Resolve**. Testes posteriores mostraram que `A`, `B`, `Ctrl+B` e `Alt+Y` podem falhar tanto na controladora quanto no teclado físico quando o **Visualizador Cinema** permanece em tela cheia no segundo monitor. A falha também foi reproduzida usando somente teclado e mouse, com AutoHotkey e Stream Dock fechados. Sair da tela cheia restaura imediatamente os comandos. Esse comportamento do Resolve é tratado separadamente em [`FALHA-TELA-CHEIA-RESOLVE.md`](./FALHA-TELA-CHEIA-RESOLVE.md).
 
 `#MaxHotkeysPerInterval 2000` somente aumenta o limite de advertência do AutoHotkey. Essa diretiva não aumenta a tolerância do Windows e não impede que o Resolve receba uma rajada excessiva.
 
@@ -55,7 +59,7 @@ O script aplica um limitador independente para cada função do knob quando o Re
 - fora do Resolve, as hotkeys continuam sem limitação;
 - o ajuste de parâmetro com clique sustentado recebe a mesma proteção.
 
-O teste que originou esta publicação permaneceu estável após pelo menos dois minutos de giros repetidos em todos os knobs.
+O teste que originou esta publicação permaneceu estável após pelo menos dois minutos de giros repetidos em todos os knobs. Isso valida o controle da rajada dos encoders, não o subsistema de atalhos internos do Resolve.
 
 ## Instalação recomendada — Ajazz/Nacodex
 
@@ -115,6 +119,8 @@ Mantenha apenas uma instância. Duas cópias fariam cada pulso ser processado du
 3. gire os knobs repetidamente por pelo menos dois minutos;
 4. confirme que os atalhos do teclado continuam funcionando no Resolve;
 5. teste as outras cenas e confira a troca automática de aplicativo.
+
+Se apenas `A`, `B`, `Ctrl+B`, `Alt+Y` ou outros comandos específicos da linha do tempo falharem enquanto o **Visualizador Cinema** estiver em tela cheia, saia da tela cheia com `Ctrl+F` e consulte o [aviso dedicado](./FALHA-TELA-CHEIA-RESOLVE.md). Aumentar indefinidamente o limite do AutoHotkey não corrige esse caso.
 
 ## Configuração em controladoras genéricas
 
@@ -192,6 +198,14 @@ Se ainda houver travamento:
 6. se o teclado falhar também em outros programas, investigue USB, driver e firmware;
 7. se apenas uma ação importada falhar, refaça o caminho do aplicativo, a saída de áudio ou o plugin daquela ação.
 
+Se a falha estiver restrita a alguns comandos da timeline, verifique também:
+
+1. se o **Visualizador Cinema** está em tela cheia em outro monitor;
+2. se sair da tela cheia com `Ctrl+F` restaura imediatamente os comandos;
+3. se os controles **Seleção Automática** das pistas estão ligados e se as pistas relevantes estão desbloqueadas;
+4. se o mesmo comando funciona pelo menu ou pela barra de ferramentas no instante da falha;
+5. se o problema também ocorre com AutoHotkey e Stream Dock fechados desde antes de abrir o Resolve.
+
 ## Reverter
 
 Feche o script pelo ícone verde `H` e volte a executar sua cópia de backup. Para as cenas, use seu arquivo exportado anteriormente ou exclua apenas a cena importada no Stream Dock. O script não altera o DaVinci Resolve, o registro do Windows nem o firmware.
@@ -204,6 +218,10 @@ Feche o script pelo ícone verde `H` e volte a executar sua cópia de backup. Pa
 - [AutoHotkey — #MaxHotkeysPerInterval](https://ahk4.us/docs/commands/_MaxHotkeysPerInterval.htm)
 - [AutoHotkey — #MenuMaskKey](https://ahk4.us/docs/commands/_MenuMaskKey.htm)
 - [Blackmagic Forum — keyboard shortcuts stop working](https://forum.blackmagicdesign.com/viewtopic.php?f=21&t=71678)
+- [Blackmagic Forum — atalhos quebrados em atualização anterior](https://forum.blackmagicdesign.com/viewtopic.php?f=21&start=0&t=82010&uid=16)
+- [Blackmagic Forum — Alt+Y e timelines empilhadas](https://forum.blackmagicdesign.com/viewtopic.php?f=38&t=202573)
+- [Blackmagic Forum — atalhos personalizados que deixam de responder](https://forum.blackmagicdesign.com/viewtopic.php?p=587323&t=105669)
+- [Guia oficial do Resolve 20 — seleção à frente com Y e Alt+Y](https://documents.blackmagicdesign.com/UserManuals/DaVinci-Resolve-20-Editors-Guide.pdf?_v=1757574010000)
 - [Discussão sobre limitar eventos rápidos de scroll](https://www.reddit.com/r/AutoHotkey/comments/umnru0/)
 - [Discussão sobre debounce de encoder rotativo](https://www.reddit.com/r/AutoHotkey/comments/1tz4i7s/rautohotkey/)
 - [Perfis são específicos de dispositivo e sistema](https://docs.elgato.com/stream-deck/profiles/getting-started/)
