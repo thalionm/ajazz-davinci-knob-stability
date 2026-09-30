@@ -9,7 +9,7 @@ O repositório reúne:
 - 58 ícones PNG para personalização;
 - tabelas para reproduzir cada cena em outras controladoras, mesmo quando o arquivo `.SDProfile` não é compatível.
 
-> O limitador dos knobs foi inicialmente validado no Windows com AutoHotkey v1.1.37.02 e DaVinci Resolve 20.3.2 (Build 9). Testes posteriores no **DaVinci Resolve gratuito 21.1, Build 14**, confirmaram uma falha independente do Resolve ao editar com o **Visualizador Cinema** em tela cheia no segundo monitor. Consulte o [aviso dedicado](./FALHA-TELA-CHEIA-RESOLVE.md). Cenas do Stream Dock são vinculadas ao modelo; em outro modelo ou software, use as tabelas de configuração manual.
+> O limitador dos knobs foi inicialmente validado no Windows com AutoHotkey v1.1.37.02. A falha recorrente do **Visualizador Cinema** em tela cheia no segundo monitor ocorreu diretamente neste equipamento tanto no **DaVinci Resolve gratuito 20.3.2, Build 9**, quanto no **21.1, Build 14**, além de haver relatos equivalentes em outras versões. A recuperação imediata ao sair da tela cheia foi validada diretamente na 21.1 Build 14. Consulte o [aviso dedicado](./FALHA-TELA-CHEIA-RESOLVE.md). Cenas do Stream Dock são vinculadas ao modelo; em outro modelo ou software, use as tabelas de configuração manual.
 
 ## Downloads
 

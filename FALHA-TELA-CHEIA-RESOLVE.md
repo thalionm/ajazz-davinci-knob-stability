@@ -2,11 +2,11 @@
 
 ## Resumo
 
-No **DaVinci Resolve gratuito 21.1, Build 14 (`21.1.00014`)**, no Windows, foi confirmada uma falha interna ao trabalhar com a linha do tempo em um monitor e o **Visualizador Cinema** em tela cheia no outro.
+Há uma falha recorrente do **Visualizador Cinema** em tela cheia no segundo monitor, com relatos equivalentes em diferentes versões do DaVinci Resolve. Neste equipamento, a falha ocorreu diretamente no **DaVinci Resolve gratuito 20.3.2, Build 9**, e no **21.1, Build 14 (`21.1.00014`)**, no Windows. A recuperação imediata ao sair da tela cheia foi validada diretamente na versão 21.1 Build 14.
 
 Depois de algum tempo nesse modo, comandos de edição específicos deixam de responder tanto no teclado físico quanto na controladora. O AutoHotkey e o Stream Dock não precisam estar em execução para a falha ocorrer.
 
-O mesmo padrão já ocorria na versão anterior usada nos testes, embora nela os comandos ainda pudessem retornar sozinhos após algum tempo. Como a falha está ligada ao modo de tela cheia e há relatos semelhantes em várias gerações do Resolve, sair do **Visualizador Cinema** provavelmente também é a solução nessa versão anterior. A recuperação imediata por esse procedimento, porém, foi validada diretamente apenas no Resolve 21.1 Build 14.
+Na versão 20.3.2 Build 9, os comandos ainda podiam retornar sozinhos após algum tempo; na 21.1 Build 14, passaram a permanecer inativos até a saída da tela cheia. Os testes e os relatos comparáveis demonstram que o problema não é exclusivo da versão 21.1. Ainda assim, não se afirma que todas as builds sejam necessariamente afetadas, nem que o comportamento seja idêntico em todas elas.
 
 ## Sintomas confirmados
 
