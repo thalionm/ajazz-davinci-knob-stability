@@ -19,6 +19,7 @@ O repositório reúne:
 - [Mapa completo das cenas e dos softwares](./CONFIGURACAO.md)
 - [Diagnóstico de atalhos seletivos do Resolve](./DIAGNOSTICO-ATALHOS-RESOLVE.md)
 - [Falha do Visualizador Cinema em tela cheia](./FALHA-TELA-CHEIA-RESOLVE.md)
+- [Reprodução lenta dentro do multicâmera — correção validada](./REPRODUCAO-LENTA-MULTICAMERA.md)
 - [Origem e licença dos recursos visuais](./ASSETS.md)
 - [Verificação de integridade SHA-256](./SHA256SUMS)
 - [Política de segurança](./SECURITY.md)
