@@ -51,14 +51,14 @@ O limitador tornou os knobs estáveis no teste de estresse, mas **não deve ser 
 
 ## Como a correção funciona
 
-O script aplica um limitador independente para cada função do knob quando o Resolve está ativo:
+O script aplica um limitador independente aos atalhos de rolagem e zoom quando o Resolve está ativo:
 
 - no máximo um evento por canal a cada **40 ms** — cerca de 25 por segundo;
 - pulsos excedentes são descartados imediatamente;
 - os dois sentidos do mesmo knob compartilham o mesmo canal;
 - não há `Sleep`, `KeyWait` nem fila artificial;
 - fora do Resolve, as hotkeys continuam sem limitação;
-- o ajuste de parâmetro com clique sustentado recebe a mesma proteção.
+- o ajuste de parâmetro com clique sustentado usa movimento relativo direto, sem esse limitador, conforme a correção descrita abaixo.
 
 O teste que originou esta publicação permaneceu estável após pelo menos dois minutos de giros repetidos em todos os knobs. Isso valida o controle da rajada dos encoders, não o subsistema de atalhos internos do Resolve.
 
@@ -67,7 +67,7 @@ O teste que originou esta publicação permaneceu estável após pelo menos dois
 ### 1. Instale os programas
 
 1. Instale o aplicativo **Stream Dock** indicado para o seu modelo Ajazz/Nacodex. O manual do AKP03E orienta usar o aplicativo Stream Dock fornecido pelo fabricante.
-2. Instale o [AutoHotkey v1.1](https://www.autohotkey.com/). O script usa sintaxe v1 e não funciona no v2 sem adaptação.
+2. Instale o [AutoHotkey v1.1.37 ou posterior da série v1](https://www.autohotkey.com/). O script usa sintaxe v1 e não funciona no v2 sem adaptação.
 3. Instale ou abra os aplicativos cujas cenas pretende usar: DaVinci Resolve, Canva, Chrome, Photoshop, VLC, Deezer ou Windows Media Player.
 
 Conecte a controladora diretamente a uma porta USB durante a configuração inicial. Se houver desconexões físicas, teste sem hub antes de alterar atalhos.
@@ -111,7 +111,7 @@ Associação automática é conveniente, mas não obrigatória. Uma cena também
 3. execute o arquivo com AutoHotkey v1;
 4. após alterações, clique com o botão direito no `H` e escolha **Reload This Script**.
 
-Mantenha apenas uma instância. Duas cópias fariam cada pulso ser processado duas vezes.
+Mantenha apenas uma cópia em execução. `#SingleInstance Force` substitui a instância do mesmo arquivo, mas não elimina scripts equivalentes com outros nomes ou caminhos; essas cópias podem disputar os mesmos atalhos.
 
 ### 6. Teste
 
@@ -151,7 +151,7 @@ O terceiro comando de cada knob normalmente corresponde ao clique no encoder. El
 
 ## Ajustando a sensibilidade
 
-O intervalo padrão fica nesta linha:
+O intervalo dos atalhos de rolagem e zoom fica nesta linha; ele não controla o ajuste direto do Inspetor:
 
 ```ahk
 SendControllerEvent(channel, keys, interval := 40)
@@ -164,14 +164,25 @@ SendControllerEvent(channel, keys, interval := 40)
 
 Altere somente o número, salve, recarregue o script e repita o teste de estresse.
 
-## Ajuste de parâmetros do Inspector
+## Ajuste de parâmetros do Inspetor
 
-O bloco final do script converte `Left` e `Right` em movimento horizontal do mouse apenas quando:
+O knob central envia as setas esquerda e direita. Enquanto o Resolve está ativo e o botão esquerdo físico está pressionado sobre um campo numérico arrastável, o script converte cada acionamento aceito em um pequeno movimento horizontal relativo. Ao soltar o botão, as setas voltam ao comportamento normal.
 
-- o Resolve está ativo; e
-- o botão esquerdo físico do mouse está pressionado.
+1. Selecione o clipe e abra o **Inspetor**.
+2. Pressione e mantenha o botão esquerdo sobre o número de um parâmetro, como **Volume**.
+3. Gire o knob central nos dois sentidos e solte o botão ao terminar.
 
-Isso permite sustentar o clique sobre um parâmetro do Inspector e usar o knob central para ajustá-lo. Se sua controladora não envia `Left`/`Right`, mude essas duas hotkeys ou ignore o bloco.
+O critério é o Resolve ativo com o clique sustentado; o script não reconhece visualmente o painel. As setas do teclado também são interceptadas nesse contexto. Se sua controladora não envia `Left`/`Right`, adapte essas hotkeys.
+
+### Correção validada em novembro de 2026
+
+O movimento anterior, `{Click -1 0 0 Rel}` / `{Click 1 0 0 Rel}`, passou a produzir saltos grandes para o mesmo lado. O mouse físico continuava ajustando normalmente. Embora a sintaxe use `Rel`, o AutoHotkey v1 converte esse comando em coordenadas absolutas antes do envio ao Windows. A nova função `MoveInspectorRelative` usa diretamente a API `SendInput` do Windows com `MOUSEEVENTF_MOVE`, sem `MOUSEEVENTF_ABSOLUTE`.
+
+O usuário confirmou que essa troca eliminou os saltos no teste com a AKP03E e Resolve 21.1, Build 14. A retirada do filtro de 40 ms somente desse ajuste melhorou a resposta do knob. O filtro continua nos atalhos de rolagem e zoom que já haviam sido estabilizados.
+
+O ajuste direto não tem acumulador, temporizador, espera nem repetição automática. `SetBatchLines, -1` remove as pausas automáticas do interpretador; `#MaxThreadsBuffer Off` explicita a política padrão de não reservar uma repetição extra quando uma hotkey já está ocupada. Isso não elimina eventuais filas na controladora, no Windows ou no Resolve.
+
+**Limites da validação:** as setas físicas ainda foram percebidas como lentas; não foi validada uma correção para esse comportamento. Não se comprovou qual alteração originou o problema nem um defeito interno específico do Resolve. Um deslocamento relativo de uma unidade não representa uma quantidade fixa em dB ou outra unidade do parâmetro. Esta atualização não corrige a falha separada do Visualizador Cinema.
 
 ## Por que não usar `Sleep` ou `KeyWait`?
 
@@ -185,14 +196,17 @@ Esses comandos podem manter uma execução ocupada enquanto novos pulsos chegam.
 
 1. pressione `Win+R`;
 2. digite `shell:startup`;
-3. crie nessa pasta um atalho para `Rolagem-DaVinci.ahk`.
+3. crie nessa pasta um único atalho para o executável do AutoHotkey v1, passando o caminho do seu `Rolagem-DaVinci.ahk` entre aspas como argumento;
+4. remova ou atualize atalhos antigos que iniciem outras cópias do script.
+
+Use os caminhos da sua instalação. O script será iniciado ao entrar na sua conta do Windows; ele não cria a inicialização automática por conta própria.
 
 ## Diagnóstico rápido
 
 Se ainda houver travamento:
 
 1. confirme que somente uma instância do script está ativa;
-2. aumente o intervalo de `40` para `50` ou `60` ms;
+2. se a falha ocorrer na rolagem ou no zoom, teste o intervalo de `40` para `50` ou `60` ms; essa configuração não se aplica ao movimento direto do Inspetor;
 3. confira se o software da controladora não repete macros além dos pulsos físicos;
 4. teste outra porta USB, sem hub;
 5. verifique se o problema permanece restrito ao Resolve;
@@ -212,6 +226,9 @@ Se a falha estiver restrita a alguns comandos da timeline, verifique também:
 Feche o script pelo ícone verde `H` e volte a executar sua cópia de backup. Para as cenas, use seu arquivo exportado anteriormente ou exclua apenas a cena importada no Stream Dock. O script não altera o DaVinci Resolve, o registro do Windows nem o firmware.
 
 ## Referências
+
+- [AutoHotkey v1.1.37.02 — implementação do movimento do mouse](https://github.com/AutoHotkey/AutoHotkey/blob/v1.1.37.02/source/keyboard_mouse.cpp)
+- [Microsoft — estrutura MOUSEINPUT e movimento relativo](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-mouseinput)
 
 - [Manual do Ajazz AKP03E — instalação e Stream Dock](https://manuals.plus/ae/1005007498827221)
 - [MiraBox — importar, exportar e fazer backup de cenas](https://mirabox.net/de/blogs/tutorial/how-to-use-export-scene-and-import-scene-on-streamdock)

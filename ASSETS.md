@@ -2,6 +2,8 @@
 
 A pasta [`icons`](./icons/) contém 58 PNGs fornecidos junto com as cenas. Os arquivos foram regravados sem metadados de conta, caminhos locais ou identificadores internos do Canva; o conteúdo visual foi preservado.
 
+Em novembro de 2026, a revisão também removeu metadados XMP de nove PNGs incorporados à cena pública do DaVinci Resolve. Os blocos de dados da imagem foram preservados byte a byte; os comandos e as páginas da cena não foram alterados. Esta limpeza da versão atual não reescreve commits anteriores.
+
 ## Organização
 
 - `icons/`: ícones de edição, transporte e atalhos gerais;

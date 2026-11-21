@@ -1,3 +1,9 @@
+﻿; AJAZZ / DaVinci Resolve - versao consolidada em 2026-11-19
+; Knob central + clique sustentado: movimento relativo fino.
+#Requires AutoHotkey v1.1.37+
+#SingleInstance Force
+#MaxThreadsBuffer Off
+SetBatchLines, -1
 #InstallMouseHook
 #NoEnv
 #InstallKeybdHook
@@ -5,6 +11,7 @@
 #MaxHotkeysPerInterval 2000
 SendMode Input
 SetWorkingDir %A_ScriptDir%
+Menu, Tray, Tip, AJAZZ - DaVinci | Movimento relativo
 
 ^F11::
 SendControllerEvent("ctrl-wheel", "{Blind}{WheelUp}")
@@ -79,11 +86,32 @@ SendControllerEvent(channel, keys, interval := 40)
 #If WinActive("ahk_exe Resolve.exe") && GetKeyState("LButton", "P")
 
 Left::
-SendControllerEvent("inspector-adjust", "{Click -1 0 0 Rel}")
+MoveInspectorRelative(-1)
 return
 
 Right::
-SendControllerEvent("inspector-adjust", "{Click 1 0 0 Rel}")
+MoveInspectorRelative(1)
 return
 
 #If
+
+; Ajuste direto: um movimento relativo por acionamento aceito.
+; Sem filtro de 40 ms, acumulador, timer ou repeticao automatica.
+MoveInspectorRelative(dx)
+{
+    static input, size := 0, offset := 0
+    if (!WinActive("ahk_exe Resolve.exe") || !GetKeyState("LButton", "P"))
+        return
+    if (dx != -1 && dx != 1)
+        return
+
+    if (!size)
+    {
+        size := (A_PtrSize = 8) ? 40 : 28
+        offset := (A_PtrSize = 8) ? 8 : 4
+        VarSetCapacity(input, size, 0)
+        NumPut(0x0001, input, offset + 12, "UInt") ; MOUSEEVENTF_MOVE somente
+    }
+    NumPut(dx, input, offset, "Int")
+    return DllCall("user32\SendInput", "UInt", 1, "Ptr", &input, "Int", size, "UInt")
+}

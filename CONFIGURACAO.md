@@ -33,6 +33,8 @@ Aplicativo sugerido: `Resolve.exe`. O perfil público usa o caminho padrão em `
 
 Os atalhos `Ctrl+F4`, `Ctrl+F5`, `Ctrl+F7` e `Ctrl+F8` são interceptados pelo script e convertidos em roda do mouse com limitação de frequência.
 
+O knob de reprodução também ajusta valores arrastáveis do **Inspetor** enquanto o botão esquerdo do mouse permanece pressionado sobre o número. Esse ajuste usa movimento relativo direto, sem o filtro de 40 ms. As setas físicas do teclado compartilham a mesma função nesse contexto; ao soltar o mouse, volta a navegação normal. Veja os [detalhes e limites da validação](./README.md#ajuste-de-parâmetros-do-inspetor).
+
 ## Canva
 
 Download: [`Canva.SDProfile`](./scenes/Canva.SDProfile)
